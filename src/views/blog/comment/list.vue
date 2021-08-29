@@ -1,0 +1,106 @@
+<template>
+  <div class="app-container">
+    <el-button type="primary" size="small" @click="addItem">添加管理员</el-button>
+    <el-table
+      :data="dataList"
+      style="width: 100%"
+    >
+      <el-table-column
+        prop="id"
+        label="ID"
+      />
+      <el-table-column
+        prop="name"
+        label="名称"
+      />
+      <el-table-column
+        prop="role_id"
+        label="角色ID"
+        ww
+      />
+      <el-table-column
+        prop="created_date"
+        label="创建时间"
+      />
+      <el-table-column
+        prop="updated_date"
+        label="更新时间"
+      />
+      <el-table-column
+        prop="deleted_date"
+        label="删除时间"
+      />
+      <el-table-column
+        label="操作"
+      >
+        <template slot-scope="scope">
+          <el-link type="primary" class="action-link" @click="rePwd(scope.row.id)">
+            重置密码
+          </el-link>
+
+          <el-link type="warning" class="action-link" @click="updItem(scope.row.id)">
+            编辑
+          </el-link>
+
+          <el-link type="danger" class="action-link" @click="delItem(scope.row.id)">
+            删除
+          </el-link>
+        </template>
+      </el-table-column>
+    </el-table>
+
+  </div>
+</template>
+
+<script>
+import { Message } from 'element-ui'
+
+export default {
+  name: 'Index',
+  data() {
+    return {
+      dataList: []
+    }
+  },
+  mounted() {
+    this.getList()
+  },
+  methods: {
+    getList() {
+      this.$store.dispatch('systemAdmin/list')
+        .then(res => {
+          this.dataList = res.data
+        })
+    },
+    addItem() {
+      this.$router.push('/system/admin/add')
+    },
+    updItem(id) {
+      this.$router.push({ path: '/system/admin/upd?id=' + id })
+    },
+    delItem(id) {
+      this.$store.dispatch('systemAdmin/delItem', id)
+        .then(res => {
+          Message({
+            message: res.msg,
+            type: 'success',
+            duration: 1000
+          })
+          this.$nextTick(function() {
+            this.getList()
+          })
+        })
+    },
+    rePwd(id) {
+      this.$router.push({ path: '/system/admin/rePwd?id=' + id })
+    }
+  }
+
+}
+</script>
+
+<style scoped>
+.action-link {
+  margin-right: 5px;
+}
+</style>
